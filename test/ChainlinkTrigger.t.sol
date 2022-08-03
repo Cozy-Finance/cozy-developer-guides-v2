@@ -1,13 +1,10 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.15;
 
-// import "forge-std/Test.sol";
-import "test/utils/DSTestPlus.sol";
-
-import "src/interfaces/IManager.sol";
 import "src/interfaces/IManagerTypes.sol";
 import "src/ChainlinkTrigger.sol";
 import "src/interfaces/ICState.sol";
+import "test/utils/DSTestPlus.sol";
 import "test/utils/MockChainlinkOracle.sol";
 
 contract MockManager is ICState {
