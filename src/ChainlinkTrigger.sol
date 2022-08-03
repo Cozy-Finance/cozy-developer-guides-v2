@@ -34,7 +34,7 @@ contract ChainlinkTrigger is BaseTrigger {
   error InvalidTimestamp();
 
   constructor(
-    Manager _manager,
+    IManager _manager,
     AggregatorV3Interface _truthOracle,
     AggregatorV3Interface _trackingOracle,
     uint256 _priceTolerance,

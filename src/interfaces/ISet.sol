@@ -3,19 +3,10 @@ pragma solidity ^0.8.0;
 
 import "src/interfaces/IConfig.sol";
 import "src/interfaces/ILFT.sol";
+import "src/interfaces/ISetEvents.sol";
+import "src/interfaces/ISetTypes.sol";
 
-interface ISet is ILFT {
-  event Cancellation(address caller, address indexed receiver, address indexed owner, uint256 protection, uint256 ptokens, address indexed trigger, uint256 refund);
-  event Claim(address caller, address indexed receiver, address indexed owner, uint256 protection, uint256 ptokens, address indexed trigger);
-  event Deposit(address indexed caller, address indexed owner, uint256 assets, uint256 shares);
-  event Purchase(address indexed caller, address indexed owner, uint256 protection, uint256 ptokens, address indexed trigger, uint256 cost);
-  event Withdraw(address caller, address indexed receiver, address indexed owner, uint256 assets, uint256 shares, uint256 indexed withdrawalId);
-  event WithdrawalPending(address caller, address indexed receiver, address indexed owner, uint256 assets, uint256 shares, uint256 indexed withdrawalId);
-
-  struct PendingWithdrawal { uint128 shares; uint128 assets; address owner; uint64 queueTime; address receiver; uint64 delay; }
-
-  function DOMAIN_SEPARATOR() view external returns (bytes32);
-  function VERSION() view external returns (uint256);
+interface ISet is ILFT, ISetEvents, ISetTypes {
   function accrueDecay(address _trigger) external;
   function accruedCozyBackstopFees() view external returns (uint128);
   function accruedCozyReserveFees() view external returns (uint128);
