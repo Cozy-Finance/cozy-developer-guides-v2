@@ -44,12 +44,13 @@ contract ChainlinkTrigger is BaseTrigger {
     trackingOracle = _trackingOracle;
     priceTolerance = _priceTolerance;
     frequencyTolerance = _frequencyTolerance;
+    runProgrammaticCheck();
   }
 
   /// @notice Compares the oracle's price to the reference oracle and toggles the trigger if required.
   /// @dev This method executes the `programmaticCheck()` and makes the
   /// required state changes both in the trigger and the sets.
-  function runProgrammaticCheck() external returns (CState) {
+  function runProgrammaticCheck() public returns (CState) {
     // Rather than revert if not active, we simply return the state and exit.
     // Both behaviors are acceptable, but returning is friendlier to the caller
     // as they don't need to handle a revert and can simply parse the
