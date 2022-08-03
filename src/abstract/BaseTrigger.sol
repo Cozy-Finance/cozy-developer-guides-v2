@@ -1,0 +1,86 @@
+// SPDX-License-Identifier: Unlicensed
+pragma solidity 0.8.15;
+
+import "src/interfaces/ICState.sol";
+import "src/interfaces/IBaseTrigger.sol";
+import "src/lib/CozyMath.sol";
+import "src/interfaces/IManager.sol";
+import "src/interfaces/ISet.sol";
+
+/**
+ * @dev Core trigger interface and implementation. All triggers should inherit from this to ensure they conform
+ * to the required trigger interface.
+ */
+abstract contract BaseTrigger is ICState, IBaseTrigger {
+  /// @notice Current trigger state.
+  CState public state;
+
+  /// @notice The Sets that use this trigger in a market.
+  /// @dev Use this function to retrieve a specific Set.
+  ISet[] public sets;
+
+  /// @notice Prevent DOS attacks by limiting the number of sets.
+  uint256 public constant MAX_SET_LENGTH = 25;
+
+  /// @notice The manager of the Cozy protocol.
+  IManager public immutable  manager;
+
+  error InvalidStateTransition();
+  error Unauthorized();
+  error SetLimitReached();
+
+  constructor(IManager _manager) { manager = _manager; }
+
+  /// @notice The Sets that use this trigger in a market.
+  /// @dev Use this function to retrieve all Sets.
+  function getSets() public view returns(ISet[] memory) {
+    return sets;
+  }
+
+  /// @notice The number of Sets that use this trigger in a market.
+  function getSetsLength() public view returns(uint256) {
+    return sets.length;
+  }
+
+  /// @dev Call this method to update Set addresses after deploy.
+  function addSet(ISet _set) external {
+    (bool _setDataExists,,,) = manager.sets(_set);
+    if (msg.sender != address(manager) || !_setDataExists) revert Unauthorized();
+    uint256 setLength = sets.length;
+    if (setLength >= MAX_SET_LENGTH) revert SetLimitReached();
+    for (uint256 i = 0; i < setLength; i = CozyMath.uncheckedIncrement(i)) {
+      if (sets[i] == _set) return;
+    }
+    sets.push(_set);
+    emit SetAdded(_set);
+  }
+
+  /// @dev Child contracts should use this function to handle Trigger state transitions.
+  function _updateTriggerState(CState _newState) internal {
+    if (!_isValidTriggerStateTransition(state, _newState)) revert InvalidStateTransition();
+    state = _newState;
+    uint256 setLength = sets.length;
+    for (uint256 i = 0; i < setLength; i = CozyMath.uncheckedIncrement(i)) {
+      manager.updateMarketState(sets[i], _newState);
+    }
+    emit TriggerStateUpdated(_newState);
+  }
+
+  /// @dev Reimplement this function if different state transitions are needed.
+  function _isValidTriggerStateTransition(CState _oldState, CState _newState) internal virtual returns(bool) {
+    // | From / To | ACTIVE      | FROZEN      | PAUSED   | TRIGGERED |
+    // | --------- | ----------- | ----------- | -------- | --------- |
+    // | ACTIVE    | -           | true        | false    | true      |
+    // | FROZEN    | true        | -           | false    | true      |
+    // | PAUSED    | false       | false       | -        | false     | <-- PAUSED is a set-level state, triggers cannot be paused
+    // | TRIGGERED | false       | false       | false    | -         | <-- TRIGGERED is a terminal state
+
+    if (_oldState == CState.TRIGGERED) return false;
+    if (_oldState == _newState) return true; // If oldState == newState, return true since the Manager will convert that into a no-op.
+    if (_oldState == CState.ACTIVE && _newState == CState.FROZEN) return true;
+    if (_oldState == CState.FROZEN && _newState == CState.ACTIVE) return true;
+    if (_oldState == CState.ACTIVE && _newState == CState.TRIGGERED) return true;
+    if (_oldState == CState.FROZEN && _newState == CState.TRIGGERED) return true;
+    return false;
+  }
+}
