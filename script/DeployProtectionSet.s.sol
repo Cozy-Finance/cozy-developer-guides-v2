@@ -14,9 +14,6 @@ contract DeployProtectionSet is Script {
   // Address of the Cozy protocol Manager.
   IManager manager = IManager(address(0xBEEF));
 
-  // Address of the Cozy Lens.
-  ICozyLens lens = ICozyLens(address(0xBEEF));
-
   // -------- Market Info --------
 
   // The trigger addresses for each market in the set.
@@ -30,11 +27,11 @@ contract DeployProtectionSet is Script {
   // NOTE: The sum of weights must equal to 1 zoc (1e4).
   uint16[] weights = [4000, 6000];
 
-  //  The purchase fees for each market. The indices of this array map 1:1 with the triggers array.
+  // The purchase fees for each market. The indices of this array map 1:1 with the triggers array.
   // NOTE: Purchase fees are denoted in zoc (1e4). For example, 50 is equivalent to 0.5%.
   uint16[] purchaseFees = [50, 50];
 
-  // -------- Set Config --------
+  // -------- Set Configuration --------
 
   // The leverage factor of the set.
   // NOTE: Leverage factors are denoted in zoc (1e4). For example, 1e4 is equivalent to 1x leverage.
@@ -44,47 +41,60 @@ contract DeployProtectionSet is Script {
   //      markets. Using the max leverage factor requires that all markets in the set have equal weights.
   //   3. The maximum leverage factor for a set is bounded by the max weight of all sets in a market, and is equal to
   //      `1 / max(weights)`. This means we need `leverageFactor / zoc > zoc / max(weights)`.
-  uint256 leverageFactor = 10000;
+  uint256 constant leverageFactor = 10000;
 
   // The fee charged by the Set owner on deposits.
-  uint256 depositFee = 100;
+  uint256 constant depositFee = 100;
 
   // Address of the set's decay model. The decay model governs how fast outstanding protection loses it's value.
-  address decayModel = address(0xBEEF);
+  address constant decayModel = address(0xBEEF);
 
   // Address of the set's drip model. The drip model governs the interest rate earned by depositors.
-  address dripModel = address(0xBEEF);
+  address constant dripModel = address(0xBEEF);
+
+  // Address of the underlying asset of the set.
+  address constant asset = address(0xBEEF);
+
+  // Arbitrary salt used for Set contract deploy.
+  bytes32 constant salt = bytes32(hex"01");
 
   // ---------------------------
   // -------- Execution --------
   // ---------------------------
 
   function run() public {
-    // For each market in the set (including any additions), a MarketInfo object must be added to _marketInfos.
+    // For each market in the set, a MarketInfo object must be added to _marketInfos.
     IConfig.MarketInfo[] memory _marketInfos = new IConfig.MarketInfo[](triggers.length);
-    console2.log("Market configs:");
+    console2.log("Market infos:");
     for (uint256 i = 0; i < triggers.length; i++) {
-      IConfig.MarketInfo memory _currentMarketInfo = lens.getMarketInfo(set, triggers[i]);
-
       _marketInfos[i] = IConfig.MarketInfo({
         trigger: triggers[i],
-        costModel: costModels[i] == address(0) ? _currentMarketInfo.costModel : costModels[i],
-        weight: weights[i] == type(uint256).max ? _currentMarketInfo.weight : weights[i],
-        purchaseFee: purchaseFees[i] == type(uint256).max ? _currentMarketInfo.purchaseFee : purchaseFees[i]
+        costModel: costModels[i],
+        weight: weights[i],
+        purchaseFee: purchaseFees[i]
       });
 
-      console2.log("    trigger", _marketInfos[i].trigger);
+      console2.log("    trigger", address(_marketInfos[i].trigger));
+      console2.log("    cost model", address(_marketInfos[i].costModel));
       console2.log("    weight", _marketInfos[i].weight);
       console2.log("    purchase fee", _marketInfos[i].purchaseFee);
       console2.log("    --------");
     }
+    console2.log("====================");
+
+    // Sort the market config array.
+    IConfig.MarketInfo[] memory _sortedMarketInfos = _sortMarketInfoArray(_marketInfos);
 
     IConfig.SetConfig memory _setConfig = IConfig.SetConfig(leverageFactor, depositFee, decayModel, dripModel);
-
-    address _asset = address(0xFA1AFE1);
+    console2.log("Set config:");
+    console2.log("    leverage factor", _setConfig.leverageFactor);
+    console2.log("    deposit fee", _setConfig.depositFee);
+    console2.log("    decay model", address(_setConfig.decayModel));
+    console2.log("    drip model", address(_setConfig.dripModel));
+    console2.log("====================");
 
     vm.broadcast();
-    ISet _set = manager.createSet(owner, pauser, _asset, _setConfig, _marketInfos, salt);
+    ISet _set = manager.createSet(owner, pauser, asset, _setConfig, _sortedMarketInfos, salt);
     console2.log("Set deployed", address(_set))
   }
 
@@ -109,13 +119,13 @@ contract DeployProtectionSet is Script {
 
   function _quickPart(IConfig.MarketInfo[] memory _marketInfos, uint256 low, uint256 high) internal pure {
     if (low < high) {
-      address pivotVal = _marketInfos[(low + high) / 2].trigger;
+      address pivotVal = address(_marketInfos[(low + high) / 2].trigger);
 
       uint256 low1 = low;
       uint256 high1 = high;
       for (;;) {
-        while (_marketInfos[low1].trigger < pivotVal) low1++;
-        while (_marketInfos[high1].trigger > pivotVal) high1--;
+        while (address(_marketInfos[low1].trigger) < pivotVal) low1++;
+        while (address(_marketInfos[high1].trigger) > pivotVal) high1--;
         if (low1 >= high1) break;
         (_marketInfos[low1], _marketInfos[high1]) = (_marketInfos[high1], _marketInfos[low1]);
         low1++;
