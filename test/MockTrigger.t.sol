@@ -22,18 +22,15 @@ contract MockTriggerSetup is DSTestPlus, ITriggerEvents, IManagerEvents {
   event FreezerAdded(address freezer);
 
   function setUp() public virtual {
+    // Mock calls to the manager that occur by these tests.
+    vm.mockCall(address(manager), abi.encodeWithSelector(manager.sets.selector), abi.encode(true, true, uint64(0), uint64(0)));
+    vm.mockCall(address(manager), abi.encodeWithSelector(manager.updateMarketState.selector), abi.encode(true));
+
     address[] memory _freezers = new address[](1);
     _freezers[0] = freezer;
     triggerA = new MockTrigger(manager, boss, _freezers, false, MAX_FREEZE_DURATION);
     vm.prank(address(manager));
-    vm.mockCall(address(manager), abi.encodeWithSelector(manager.sets.selector), abi.encode(true, true, uint64(0), uint64(0)));
     triggerA.addSet(set);
-
-    vm.mockCall(
-        address(manager),
-        abi.encodeWithSelector(manager.updateMarketState.selector),
-        abi.encode(true)
-    );
 
     skip(100);
   }
