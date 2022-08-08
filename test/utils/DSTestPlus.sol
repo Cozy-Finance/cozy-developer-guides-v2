@@ -5,6 +5,7 @@ import "chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "forge-std/Test.sol";
 import "src/interfaces/IBaseTrigger.sol";
 import "src/interfaces/ICState.sol";
+import "test/utils/MockTrigger.sol";
 
 // Extends DSPlus with additional helper methods.
 contract DSTestPlus is Test {
@@ -41,5 +42,22 @@ contract DSTestPlus is Test {
       emit log_named_address("    Both values", a);
       fail();
     }
+  }
+
+  // ---------------------------------
+  // -------- Storage helpers --------
+  // ---------------------------------
+
+  // This section contains aliases to the stdlib's checked_write methods to make tests more readable, along with
+  // with custom setters for packed slots.
+
+  function updateTriggerState(ITrigger _trigger, ICState.CState _val) public {
+    stdstore.target(address(_trigger)).sig("state()").checked_write(uint256(_val));
+    assertEq(_trigger.state(), _val);
+  }
+
+  function updateFreezeTime(MockTrigger _trigger, uint256 _val) public {
+    stdstore.target(address(_trigger)).sig("freezeTime()").checked_write(_val);
+    assertEq(_trigger.freezeTime(), _val);
   }
 }
