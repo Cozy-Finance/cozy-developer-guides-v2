@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity 0.8.15;
 
-import "src/interfaces/ICState.sol";
 import "src/interfaces/IBaseTrigger.sol";
+import "src/interfaces/ICState.sol";
 import "src/lib/CozyMath.sol";
 import "src/interfaces/IManager.sol";
 import "src/interfaces/ISet.sol";
@@ -25,11 +25,19 @@ abstract contract BaseTrigger is ICState, IBaseTrigger {
   /// @notice The manager of the Cozy protocol.
   IManager public immutable  manager;
 
+  /// @dev Thrown when a state update results in an invalid state transition.
   error InvalidStateTransition();
-  error Unauthorized();
+
+  /// @dev Thrown when trying to add a set to the `sets` array when it's length is already at `MAX_SET_LENGTH`.
   error SetLimitReached();
 
-  constructor(IManager _manager) { manager = _manager; }
+  /// @dev Thrown when the caller is not authorized to perform the action.
+  error Unauthorized();
+
+  /// @param _manager The manager of the Cozy protocol.
+  constructor(IManager _manager) {
+    manager = _manager;
+  }
 
   /// @notice The Sets that use this trigger in a market.
   /// @dev Use this function to retrieve all Sets.
@@ -56,7 +64,7 @@ abstract contract BaseTrigger is ICState, IBaseTrigger {
   }
 
   /// @dev Child contracts should use this function to handle Trigger state transitions.
-  function _updateTriggerState(CState _newState) internal {
+  function _updateTriggerState(CState _newState) internal returns (CState) {
     if (!_isValidTriggerStateTransition(state, _newState)) revert InvalidStateTransition();
     state = _newState;
     uint256 setLength = sets.length;
@@ -64,6 +72,7 @@ abstract contract BaseTrigger is ICState, IBaseTrigger {
       manager.updateMarketState(sets[i], _newState);
     }
     emit TriggerStateUpdated(_newState);
+    return _newState;
   }
 
   /// @dev Reimplement this function if different state transitions are needed.

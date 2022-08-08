@@ -9,13 +9,13 @@ import "src/interfaces/IManager.sol";
  *
  * @dev
  * MECHANICS
- * The Trigger and IManager know about each other. Whenever the trigger's state changes, it calls
- * IManager.updateMarketState(_state) so the Market is immediately aware of the state update.
+ * The Trigger and Manager know about each other. Whenever the trigger's state changes, it calls
+ * Manager.updateMarketState(_state) so the Market is immediately aware of the state update.
  *
  * DESIGN SPACE
  * This trigger is a recommended contract template, but there is no way to enforce that all triggers
  * confirm to this spec. The only true requirement of the trigger is that any state change calls
- * IManager.updateMarketState(_state) to update the Market of the new trigger state, with _state being
+ * Manager.updateMarketState(_state) to update the Market of the new trigger state, with _state being
  * an enum of { ACTIVE, FROZEN, TRIGGERED }
  *
  * This template provides four parameters that trigger developers can use to customize the behavior
@@ -70,7 +70,6 @@ import "src/interfaces/IManager.sol";
  * +-------------------------------------------------+------------------------------------------------------------------------------+
  */
 contract FlexibleTrigger is BaseTrigger {
-
   /// @notice Maximum amount of time that the trigger state can be FROZEN, in seconds. If the trigger state is
   /// FROZEN for a duration that exceeds maxFreezeDuration, the trigger state transitions to TRIGGERED.
   uint256 public immutable maxFreezeDuration;
@@ -92,6 +91,14 @@ contract FlexibleTrigger is BaseTrigger {
   /// @dev Emitted when a new freezer is added to the trigger's list of allowed freezers.
   event FreezerAdded(address freezer);
 
+  /// @param _manager The manager of the Cozy protocol.
+  /// @param _boss Address with permission to (1) transition the trigger state from ACTIVE to FROZEN,
+  /// and (2) unfreeze the trigger, i.e. transition from FROZEN to ACTIVE or TRIGGERED.
+  /// @param _freezers Addresses with permission to transition the trigger state from ACTIVE to FROZEN.
+  /// @param _isAutoTrigger If true, a programmatic check automatically flips state from ACTIVE to TRIGGERED.
+  /// If false, a programmatic check automatically flips state from ACTIVE to FROZEN.
+  /// @param _maxFreezeDuration Maximum amount of time that the trigger state can be FROZEN, in seconds. If the trigger
+  /// state is FROZEN for a duration that exceeds maxFreezeDuration, the trigger state transitions to TRIGGERED.
   constructor(
     IManager _manager,
     address _boss,

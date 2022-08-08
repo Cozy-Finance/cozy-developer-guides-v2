@@ -10,7 +10,7 @@ import "test/utils/MockChainlinkOracle.sol";
 contract MockManager is ICState {
   // Any set you ask about is managed by this contract \o/.
   function sets(ISet /* set */) external pure returns(IManagerTypes.SetData memory) {
-    return IManagerTypes.SetData(true, true, uint64(0), uint64(0));
+    return IManagerTypes.SetData(true, true, 0, 0);
   }
 
   // This can just be a no-op for the test.
@@ -31,9 +31,9 @@ contract MockChainlinkTrigger is ChainlinkTrigger {
   function TEST_HOOK_setState(CState _newState) public { state = _newState; }
 }
 
-abstract contract ChainlinkTriggerUnitTest is ICState, DSTestPlus {
+abstract contract ChainlinkTriggerUnitTest is DSTestPlus, ICState {
   uint256 constant basePrice = 1945400000000; // The answer for BTC/USD at block 15135183.
-  uint256 priceTolerance = 0.15e18; // 15%.
+  uint256 priceTolerance = 0.15e4; // 15%.
   uint256 frequencyTolerance = 60;
 
   MockChainlinkTrigger trigger;
@@ -60,11 +60,34 @@ abstract contract ChainlinkTriggerUnitTest is ICState, DSTestPlus {
   }
 }
 
+contract ChainlinkTriggerConstructorTest is ChainlinkTriggerUnitTest {
+  function test_ConstructorRunProgrammaticCheck() public {
+    IManager _manager = IManager(address(new MockManager()));
+
+    truthOracle = new MockChainlinkOracle(basePrice);
+
+    // Truth oracle has a base price of 1945400000000 and the price tolerance is 0.15e4, so with a target oracle price
+    // of 1e12, runProgrammaticCheck() should result in the trigger becoming triggered.
+    targetOracle = new MockChainlinkOracle(1e12);
+    trigger = new MockChainlinkTrigger(
+      _manager,
+      truthOracle,
+      targetOracle,
+      priceTolerance,
+      frequencyTolerance
+    );
+
+    // The trigger constructor should have executed runProgrammaticCheck() which should have transitioned
+    // the trigger into the triggered state.
+    assertEq(trigger.state(), CState.TRIGGERED);
+  }
+}
+
 contract RunProgrammaticCheckTest is ChainlinkTriggerUnitTest {
   using FixedPointMathLib for uint256;
 
   function runProgrammaticCheckAssertions(uint256 _targetPrice, CState _expectedTriggerState) public {
-    // ISetup.
+    // Setup.
     trigger.TEST_HOOK_setState(CState.ACTIVE);
     targetOracle.TEST_HOOK_setPrice(_targetPrice);
 
@@ -80,24 +103,24 @@ contract RunProgrammaticCheckTest is ChainlinkTriggerUnitTest {
   }
 
   function test_RunProgrammaticCheckUpdatesTriggerState() public {
-    uint256 _overBaseOutsideTolerance = basePrice.mulWadDown(1e18 + priceTolerance) + 1;
+    uint256 _overBaseOutsideTolerance = basePrice.mulDivDown(1e4 + priceTolerance, 1e4) + 1e9;
     runProgrammaticCheckAssertions(_overBaseOutsideTolerance, CState.TRIGGERED);
 
-    uint256 _overBaseAtTolerance = basePrice.mulWadDown(1e18 + priceTolerance);
+    uint256 _overBaseAtTolerance = basePrice.mulDivDown(1e4 + priceTolerance, 1e4);
     runProgrammaticCheckAssertions(_overBaseAtTolerance, CState.ACTIVE);
 
-    uint256 _overBaseWithinTolerance = basePrice.mulWadDown(1e18 + priceTolerance) - 1;
+    uint256 _overBaseWithinTolerance = basePrice.mulDivDown(1e4 + priceTolerance, 1e4) - 1e9;
     runProgrammaticCheckAssertions(_overBaseWithinTolerance, CState.ACTIVE);
 
     runProgrammaticCheckAssertions(basePrice, CState.ACTIVE); // At base exactly.
 
-    uint256 _underBaseWithinTolerance = basePrice.mulWadDown(1e18 - priceTolerance) + 1;
+    uint256 _underBaseWithinTolerance = basePrice.mulDivDown(1e4 - priceTolerance, 1e4) + 1e9;
     runProgrammaticCheckAssertions(_underBaseWithinTolerance, CState.ACTIVE);
 
-    uint256 _underBaseAtTolerance = basePrice.mulWadDown(1e18 - priceTolerance);
+    uint256 _underBaseAtTolerance = basePrice.mulDivDown(1e4 - priceTolerance, 1e4);
     runProgrammaticCheckAssertions(_underBaseAtTolerance, CState.ACTIVE);
 
-    uint256 _underBaseOutsideTolerance = basePrice.mulWadDown(1e18 - priceTolerance) - 1;
+    uint256 _underBaseOutsideTolerance = basePrice.mulDivDown(1e4 - priceTolerance, 1e4) - 1e9;
     runProgrammaticCheckAssertions(_underBaseOutsideTolerance, CState.TRIGGERED);
   }
 }
@@ -106,25 +129,26 @@ contract ProgrammaticCheckTest is ChainlinkTriggerUnitTest {
   using FixedPointMathLib for uint256;
 
   function test_ProgrammaticCheckAtDiscretePoints() public {
-    targetOracle.TEST_HOOK_setPrice(basePrice.mulWadDown(1e18 + priceTolerance) + 1); // Over base outside tolerance.
+    // 0.00000001e18
+    targetOracle.TEST_HOOK_setPrice(basePrice.mulDivDown(1e4 + priceTolerance, 1e4) + 1e9); // Over base outside tolerance.
     assertEq(trigger.TEST_HOOK_programmaticCheck(), true);
 
-    targetOracle.TEST_HOOK_setPrice(basePrice.mulWadDown(1e18 + priceTolerance)); // Over base at tolerance.
+    targetOracle.TEST_HOOK_setPrice(basePrice.mulDivDown(1e4 + priceTolerance, 1e4)); // Over base at tolerance.
     assertEq(trigger.TEST_HOOK_programmaticCheck(), false);
 
-    targetOracle.TEST_HOOK_setPrice(basePrice.mulWadDown(1e18 + priceTolerance) - 1); // Over base within tolerance.
+    targetOracle.TEST_HOOK_setPrice(basePrice.mulDivDown(1e4 + priceTolerance, 1e4) - 1e9); // Over base within tolerance.
     assertEq(trigger.TEST_HOOK_programmaticCheck(), false);
 
     targetOracle.TEST_HOOK_setPrice(basePrice); // At base exactly.
     assertEq(trigger.TEST_HOOK_programmaticCheck(), false);
 
-    targetOracle.TEST_HOOK_setPrice(basePrice.mulWadDown(1e18 - priceTolerance) + 1); // Under base within tolerance.
+    targetOracle.TEST_HOOK_setPrice(basePrice.mulDivDown(1e4 - priceTolerance, 1e4) + 1e9); // Under base within tolerance.
     assertEq(trigger.TEST_HOOK_programmaticCheck(), false);
 
-    targetOracle.TEST_HOOK_setPrice(basePrice.mulWadDown(1e18 - priceTolerance)); // Under base at tolerance.
+    targetOracle.TEST_HOOK_setPrice(basePrice.mulDivDown(1e4 - priceTolerance, 1e4)); // Under base at tolerance.
     assertEq(trigger.TEST_HOOK_programmaticCheck(), false);
 
-    targetOracle.TEST_HOOK_setPrice(basePrice.mulWadDown(1e18 - priceTolerance) - 1); // Under base outside tolerance.
+    targetOracle.TEST_HOOK_setPrice(basePrice.mulDivDown(1e4 - priceTolerance, 1e4) - 1e9); // Under base outside tolerance.
     assertEq(trigger.TEST_HOOK_programmaticCheck(), true);
   }
 
@@ -182,9 +206,54 @@ contract ProgrammaticCheckTest is ChainlinkTriggerUnitTest {
     }
     trigger.TEST_HOOK_programmaticCheck();
   }
+
+  function testFuzz_ProgrammaticCheckRoundUpDeltaPercentageBelowTolerance(uint128 _truthPrice) public {
+    // In this test we subtract 1 from the value that is at the price tolerance from the truth price, and confirm the
+    // trigger will not become triggered from a programmatic check. For any truth price less than 7, any tracking value
+    // different than the truth price would result in a delta greater than the tolerance (the setup price tolerance is 0.15e4, 15%).
+    vm.assume(_truthPrice >= 7);
+
+    truthOracle.TEST_HOOK_setPrice(_truthPrice);
+
+    uint256 _trackingPrice = _truthPrice + (uint256(_truthPrice) * priceTolerance / 1e4) - 1;
+    targetOracle.TEST_HOOK_setPrice(_trackingPrice);
+
+    // Confirm the calculation in ChainlinkTrigger.programmaticCheck to determine the percentage delta, which rounds up,
+    // does not cause the state of the trigger to become triggered.
+    assertEq(trigger.TEST_HOOK_programmaticCheck(), false);
+  }
+
+  function testFuzz_ProgrammaticCheckRoundUpDeltaPercentageEqualTolerance(uint128 _truthPrice) public {
+    vm.assume(_truthPrice != 0);
+
+    truthOracle.TEST_HOOK_setPrice(_truthPrice);
+
+    uint256 _trackingPrice = _truthPrice + (uint256(_truthPrice) * priceTolerance / 1e4);
+    targetOracle.TEST_HOOK_setPrice(_trackingPrice);
+
+    // Confirm the calculation in ChainlinkTrigger.programmaticCheck to determine the percentage delta, which rounds up,
+    // does not cause the state of the trigger to become triggered.
+    assertEq(trigger.TEST_HOOK_programmaticCheck(), false);
+  }
+
+  function testFuzz_ProgrammaticCheckRoundUpDeltaPercentageAboveTolerance(uint128 _truthPrice) public {
+    // In this test we add 1 to the value that is at the price tolerance from the truth price, and confirm the
+    // trigger will not become triggered from a programmatic check. For any truth price less than 7, any tracking value
+    // different than the truth price would result in a delta greater than the tolerance (the setup price tolerance is 0.15e4, 15%).
+    vm.assume(_truthPrice >= 7);
+
+    truthOracle.TEST_HOOK_setPrice(_truthPrice);
+
+    uint256 _trackingPrice = _truthPrice + (uint256(_truthPrice) * priceTolerance / 1e4) + 1;
+    targetOracle.TEST_HOOK_setPrice(_trackingPrice);
+
+    // Confirm the calculation in ChainlinkTrigger.programmaticCheck to determine the percentage delta, which rounds up,
+    // causes the state of the trigger to become triggered.
+    assertEq(trigger.TEST_HOOK_programmaticCheck(), true);
+  }
 }
 
-abstract contract PegProtectionTriggerUnitTest is ICState, DSTestPlus {
+abstract contract PegProtectionTriggerUnitTest is DSTestPlus, ICState {
   MockChainlinkOracle truthOracle;
   MockChainlinkOracle trackingOracle;
   MockChainlinkTrigger trigger;
@@ -202,7 +271,7 @@ abstract contract PegProtectionTriggerUnitTest is ICState, DSTestPlus {
       _manager,
       truthOracle,
       trackingOracle,
-      0.05e18, // 5% price tolerance.
+      0.05e4, // 5% price tolerance.
       frequencyTolerance
     );
     vm.prank(address(_manager));
@@ -213,7 +282,7 @@ abstract contract PegProtectionTriggerUnitTest is ICState, DSTestPlus {
 contract PegProtectionRunProgrammaticCheckTest is PegProtectionTriggerUnitTest {
 
   function runProgrammaticCheckAssertions(uint256 _price, CState _expectedTriggerState) public {
-    // ISetup.
+    // Setup.
     trigger.TEST_HOOK_setState(CState.ACTIVE);
     trackingOracle.TEST_HOOK_setPrice(_price);
 
