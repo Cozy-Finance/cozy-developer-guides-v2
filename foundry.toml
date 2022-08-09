@@ -10,6 +10,7 @@ solc-version = "0.8.15"
 optimizer = true
 optimizer-runs = 1
 remappings = ["test/=test/", "script/=script/"] # Allows imports using e.g. `test/` to refer to root `test` directory.
+verbosity = 3
 
 [profile.ci]
 fuzz-runs = 5000

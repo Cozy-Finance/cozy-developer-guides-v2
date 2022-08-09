@@ -2,6 +2,9 @@ pragma solidity 0.8.15;
 
 import "forge-std/Script.sol";
 
+import "src/interfaces/IManager.sol";
+import "src/interfaces/ISet.sol";
+
 contract DeployProtectionSet is Script {
   // -------------------------------
   // -------- Configuration --------
@@ -20,7 +23,7 @@ contract DeployProtectionSet is Script {
   address[] triggers = [address(0xBEEF), address(0xBEEF)];
 
   // The cost models for each market in the set. The indices of this array map 1:1 with the triggers array.
-  address[] memory costModels = [address(0xBEEF), address(0xBEEF)];
+  ICostModel[] costModels = [ICostModel(address(0xBEEF)), ICostModel(address(0xBEEF))];
 
   // The weights for each market. The indices of this array map 1:1 with the triggers array.
   // NOTE: Weights are denoted in zoc (1e4). For example, 4000 is equivalent to 40%.
@@ -47,16 +50,24 @@ contract DeployProtectionSet is Script {
   uint256 constant depositFee = 100;
 
   // Address of the set's decay model. The decay model governs how fast outstanding protection loses it's value.
-  address constant decayModel = address(0xBEEF);
+  IDecayModel constant decayModel = IDecayModel(address(0xBEEF));
 
   // Address of the set's drip model. The drip model governs the interest rate earned by depositors.
-  address constant dripModel = address(0xBEEF);
+  IDripModel constant dripModel = IDripModel(address(0xBEEF));
 
   // Address of the underlying asset of the set.
   address constant asset = address(0xBEEF);
 
   // Arbitrary salt used for Set contract deploy.
   bytes32 constant salt = bytes32(hex"01");
+
+  // -------- Set Authorized Roles --------
+
+  // The owner of the set.
+  address owner = address(0xBEEF);
+
+  // The pauser of the set.
+  address pauser = address(0xBEEF);
 
   // ---------------------------
   // -------- Execution --------
@@ -93,9 +104,14 @@ contract DeployProtectionSet is Script {
     console2.log("    drip model", address(_setConfig.dripModel));
     console2.log("====================");
 
+    console2.log("Set authorized roles:");
+    console2.log("    owner", owner);
+    console2.log("    pauser", pauser);
+    console2.log("====================");
+
     vm.broadcast();
     ISet _set = manager.createSet(owner, pauser, asset, _setConfig, _sortedMarketInfos, salt);
-    console2.log("Set deployed", address(_set))
+    console2.log("Set deployed", address(_set));
   }
 
   // -------------------------

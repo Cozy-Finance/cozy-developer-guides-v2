@@ -43,6 +43,7 @@ This lets arbitrary commands be executed on your machine, so it's recommended to
 *Purpose: Local deploy, testing, and production.*
 
 This script deploys a protection set using the configured market info and set configuration.
+Before executing, the configuration section in the script should be updated.
 
 To run this script:
 
