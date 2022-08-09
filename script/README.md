@@ -35,8 +35,8 @@ When starting anvil you'll see a list of default accounts and their private keys
 
 **_Never use the default anvil accounts on a live network, as the private keys are publicly known and funds sent to that account will be stolen_**.
 
-Additionally, note that some scripts may use the [`ffi`](https://book.getfoundry.sh/cheatcodes/ffi.html) cheatcode to automatically do things like set token balances on anvil.
-This lets arbitrary commands be executed on your machine, so it's recommended to review the `ffi` usage first to ensure the script is safe.
+⚠️ Additionally, note that some scripts may use the [`ffi`](https://book.getfoundry.sh/cheatcodes/ffi.html) cheatcode to automatically do things like set token balances on anvil.
+⚠️ This lets arbitrary commands be executed on your machine, so it's recommended to review the `ffi` usage first to ensure the script is safe.
 
 ### `DeployProtectionSet.s.sol`
 
