@@ -42,12 +42,6 @@ interface ISet is ILFT, ISetEvents, ISetTypes {
   /// `_protection` held by `_owner` by sending it to `_receiver`.
   function claim(address _trigger, uint256 _protection, address _receiver, address _owner) external returns (uint256 _ptokens);
 
-  /// @notice Transfers accrued reserve and backstop fees to the `_owner` address and `_backstop` address, respectively.
-  function claimCozyFees(address _owner, address _backstop) external;
-
-  /// @notice Transfers accrued set owner fees to `_receiver`.
-  function claimSetFees(address _receiver) external;
-
   /// @notice Completes the withdraw request for the specified ID, sending the assets to the stored `_receiver` address.
   function completeRedeem(uint256 _redemptionId) external;
 
@@ -84,21 +78,12 @@ interface ISet is ILFT, ISetEvents, ISetTypes {
   /// @notice Returns the current drip rate for the set.
   function currentDripRate() view external returns (uint256);
 
-  /// @notice Returns the active protection, decay rate, and last decay time. The response is encoded into a word.
-  function dataApd(address) view external returns (bytes32);
-
-  /// @notice Returns the state and PToken address for a market, and the state for the set. The response is encoded into a word.
-  function dataSp(address) view external returns (bytes32);
-
   /// @notice Returns the address of the set's decay model. The decay model governs how fast outstanding protection loses it's value.
   function decayModel() view external returns (address);
 
   /// @notice Supply protection by minting `_shares` shares to `_receiver` by depositing exactly `_assets` amount of
   /// underlying tokens.
   function deposit(uint256 _assets, address _receiver) external returns (uint256 _shares);
-
-  /// @notice Returns the fee charged by the Set owner on deposits.
-  function depositFee() view external returns (uint256);
 
   /// @notice Returns the market's reserve fee, backstop fee, and set owner fee applied on deposit.
   function depositFees() view external returns (uint256 _reserveFee, uint256 _backstopFee, uint256 _setOwnerFee);
@@ -111,13 +96,6 @@ interface ISet is ILFT, ISetEvents, ISetTypes {
 
   /// @notice Returns the array of metadata for all tokens minted to `_user`.
   function getMints(address _user) view external returns (MintMetadata[] memory);
-
-  /// @notice Replaces the constructor to initialize the Set contract.
-  function initialize(address _asset, uint256 _leverageFactor, uint256 _depositFee, address _decayModel, address _dripModel, IConfig.MarketInfo[] memory _marketInfos) external;
-
-  /// @dev Returns the number of times the contract has been initialized. This starts at zero, and is incremented with each
-  // upgrade's new initializer method.
-  function initializeCount() view external returns (uint256);
 
   /// @notice Returns true if `_who` is a valid market in the `_set`, false otherwise.
   function isMarket(address _who) view external returns (bool);
@@ -133,19 +111,11 @@ interface ISet is ILFT, ISetEvents, ISetTypes {
   /// the new amount of assets to be received when the withdrawal is completed.
   function lastTriggeredExchangeRate() view external returns (uint192);
 
-  /// @notice Returns the pending withdrawal count when the most recently triggered market became triggered, or 0 if none.
-  /// Any pending withdrawals with IDs less than this need to have their amount of assets updated to reflect the exchange
-  /// rate at the time when the most recently triggered market became triggered.
-  function lastTriggeredPendingWithdrawalCount() view external returns (uint64);
-
   /// @notice Returns the leverage factor of the set, as a zoc.
   function leverageFactor() view external returns (uint256);
 
   /// @notice Returns the address of the Cozy protocol Manager.
   function manager() view external returns (address);
-
-  /// @notice Returns the encoded market configuration, i.e. it's cost model, weight, and purchase fee for a market.
-  function marketConfig(address) view external returns (bytes32);
 
   /// @notice Returns the maximum amount of the underlying asset that can be deposited to supply protection.
   function maxDeposit(address) view external returns (uint256);
@@ -171,9 +141,6 @@ interface ISet is ILFT, ISetEvents, ISetTypes {
   /// of underlying tokens.
   function mint(uint256 _shares, address _receiver) external returns (uint256 _assets);
 
-  /// @notice Mapping from user address to all of their mints.
-  function mints(address, uint256) view external returns (uint128 amount, uint64 time, uint64 delay);
-
   /// @notice Returns the amount of decay that will accrue next time `accrueDecay()` is called for the market.
   function nextDecayAmount(address _trigger) view external returns (uint256 _accruedDecay);
 
@@ -189,21 +156,12 @@ interface ISet is ILFT, ISetEvents, ISetTypes {
   /// @notice Returns the number of triggered markets in the set.
   function numTriggeredMarkets() view external returns (uint256);
 
-  /// @notice Pauses the set.
-  function pause() external;
-
   /// @notice Claims protection payout after the market for `_trigger` is triggered. Burns the specified number of
   /// `ptokens` held by `_owner` and sends the payout to `_receiver`.
   function payout(address _trigger, uint256 _ptokens, address _receiver, address _owner) external returns (uint256 _protection);
 
-  /// @notice Returns the total number of withdrawals that have been queued, including pending withdrawals that have been completed.
-  function pendingWithdrawalCount() view external returns (uint64);
-
   /// @notice Returns all withdrawal data for the specified withdrawal ID.
   function pendingWithdrawalData(uint256 _withdrawalId) view external returns (uint256 _remainingWithdrawalDelay, PendingWithdrawal memory _pendingWithdrawal);
-
-  /// @notice Maps a withdrawal ID to information about the pending withdrawal.
-  function pendingWithdrawals(uint256) view external returns (uint128 shares, uint128 assets, address owner, uint64 queueTime, address receiver, uint64 delay);
 
   /// @notice Allows an on-chain or off-chain user to simulate the effects of their cancellation (i.e. view the refund
   /// amount, number of PTokens burned, and associated fees collected by the protocol) at the current block, given
@@ -264,9 +222,6 @@ interface ISet is ILFT, ISetEvents, ISetTypes {
   /// @notice Return the PToken address for the given market.
   function ptoken(address _who) view external returns (address _ptoken);
 
-  /// @notice Returns the address of the Cozy protocol PTokenFactory.
-  function ptokenFactory() view external returns (address);
-
   /// @notice Purchase `_protection` amount of protection for the specified market, and send the PTokens to `_receiver`.
   function purchase(address _trigger, uint256 _protection, address _receiver) external returns (uint256 _totalCost, uint256 _ptokens);
 
@@ -306,18 +261,6 @@ interface ISet is ILFT, ISetEvents, ISetTypes {
 
   /// @notice Array of trigger addresses used for markets in the set.
   function triggers(uint256) view external returns (address);
-
-  /// @notice Unpauses the set and transitions to the provided `_state`.
-  function unpause(uint8 _state) external;
-
-  /// @notice Execute queued updates to setConfig and marketConfig. This should only be called by the Manager.
-  function updateConfigs(uint256 _leverageFactor, uint256 _depositFee, address _decayModel, address _dripModel, IConfig.MarketInfo[] memory _marketInfos) external;
-
-  /// @notice Updates the state of the a market in the set.
-  function updateMarketState(address _trigger, uint8 _newState) external;
-
-  /// @notice Updates the set's state to `_state.
-  function updateSetState(uint8 _state) external;
 
   /// @notice Returns the current utilization ratio of the specified market, as a wad.
   function utilization(address _trigger) view external returns (uint256);
