@@ -44,16 +44,9 @@ interface IManager is IManagerEvents {
   /// @notice Returns the maximum amount of assets that can be deposited into a set that uses `_asset`.
   function getDepositCap(address _asset) view external returns (uint256);
 
-  /// @notice Returns the stored inactivity data for the specified `_set` and `_trigger`.
-  function getMarketInactivityData(ISet _set, address _trigger) view external returns (InactivityData memory);
-
   /// @notice Returns the amount of time that accrued towards the withdrawal delay for the `_set`, given the
   /// `_startTime` and the `_setState`.
   function getWithdrawDelayTimeAccrued(ISet _set, uint256 _startTime, uint8 _setState) view external returns (uint256 _activeTimeElapsed);
-
-  /// @notice Performs a binary search to return the cumulative inactive duration before a `_timestamp` based on
-  /// the given `_inactivePeriods` that occurred.
-  function inactiveDurationBeforeTimestampLookup(uint256 _timestamp, InactivePeriod[] memory _inactivePeriods) pure external returns (uint256);
 
   /// @notice Returns true if there is at least one FROZEN market in the `_set`, false otherwise.
   function isAnyMarketFrozen(ISet _set) view external returns (bool);
@@ -91,23 +84,11 @@ interface IManager is IManagerEvents {
   /// false otherwise.
   function isValidUpdate(ISet _set, SetConfig memory _setConfig, MarketInfo[] memory _marketInfos) view external returns (bool);
 
-  /// @notice Maps from set address to trigger address to metadata about previous inactive periods for markets.
-  function marketInactivityData(address, address) view external returns (uint64 inactiveTransitionTime);
-
   /// @notice Minimum duration that funds must be supplied for before initiating a withdraw.
   function minDepositDuration() view external returns (uint32);
 
-  /// @notice Returns the Manager contract owner address.
-  function owner() view external returns (address);
-
   /// @notice Pauses the set.
   function pause(ISet _set) external;
-
-  /// @notice Returns the manager Contract pauser address.
-  function pauser() view external returns (address);
-
-  /// @notice Returns the address of the Cozy protocol PTokenFactory.
-  function ptokenFactory() view external returns (address);
 
   /// @notice Duration that must elapse before purchased protection becomes active.
   function purchaseDelay() view external returns (uint32);
@@ -119,12 +100,6 @@ interface IManager is IManagerEvents {
   /// is used to prove that the `SetConfig` and `MarketInfo[]` params used when applying config updates are identical
   /// to the queued updates.
   function queuedConfigUpdateHash(address) view external returns (bytes32);
-
-  /// @notice Returns the Cozy protocol SetFactory.
-  function setFactory() view external returns (address);
-
-  /// @notice Returns metadata about previous inactive periods for sets.
-  function setInactivityData(address) view external returns (uint64 inactiveTransitionTime);
 
   /// @notice Returns the owner address for the given set.
   function setOwner(address) view external returns (address);
@@ -138,9 +113,6 @@ interface IManager is IManagerEvents {
 
   /// @notice Unpauses the set.
   function unpause(ISet _set) external;
-
-  /// @notice Update params related to config updates.
-  function updateConfigParams(uint256 _configUpdateDelay, uint256 _configUpdateGracePeriod) external;
 
   /// @notice Signal an update to the set config and market configs. Existing queued updates are overwritten.
   function updateConfigs(ISet _set, SetConfig memory _setConfig, MarketInfo[] memory _marketInfos) external;
