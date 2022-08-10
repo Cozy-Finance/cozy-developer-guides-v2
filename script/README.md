@@ -8,6 +8,7 @@ Some may be intended to be used locally only, others to send live transactions, 
   - [Scripts](#scripts)
     - [`DeployProtectionSet.s.sol`](#deployprotectionsetssol)
     - [`UpdateConfigs.s.sol`](#updateconfigsssol)
+    - [`UpdateMetadata.s.sol`](#updatemetadatassol)
 
 
 ## Configuration
@@ -91,6 +92,31 @@ forge script script/UpdateConfigs.s.sol --rpc-url "http://127.0.0.1:8545" --priv
 forge script script/UpdateConfigs.s.sol \
   --rpc-url "http://127.0.0.1:8545" \
   --private-key $OWNER_PRIVATE_KEY \
+  --broadcast \
+  -vvvv
+```
+
+### `UpdateMetadata.s.sol`
+
+*Purpose: Update set and trigger metadata.*
+
+This script requires the protocol and the metadata registry to be deployed on the desired chain.
+The script includes a "Configuration" section at the top, which must be updated to include the desired metadata updates.
+
+To run this script:
+
+```sh
+# Start anvil, forking from the current state of the desired chain.
+anvil --fork-url $OPTIMISM_RPC_URL
+
+# In a separate terminal, perform a dry run of the script.
+# The private key of a user authorized to make the desired metadata updates must be included.
+forge script script/UpdateMetadata.s.sol --rpc-url "http://127.0.0.1:8545" --private-key $AUTHORIZED_PRIVATE_KEY -vvvv
+
+# Or, to broadcast a transaction.
+FOUNDRY_PROFILE=lite forge script script/UpdateMetadata.s.sol \
+  --rpc-url "http://127.0.0.1:8545" \
+  --private-key $AUTHORIZED_PRIVATE_KEY \
   --broadcast \
   -vvvv
 ```
