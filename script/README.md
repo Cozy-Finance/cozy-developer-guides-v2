@@ -86,9 +86,12 @@ anvil --fork-url $OPTIMISM_RPC_URL
 
 # In a separate terminal, perform a dry run the script.
 # The private key of either the set owner or protocol owner must be included in order to queue config updates.
-forge script script/UpdateConfigs.s.sol --rpc-url "http://127.0.0.1:8545" --private-key $OWNER_PRIVATE_KEY -vvvv
+forge script script/UpdateConfigs.s.sol \
+  --rpc-url "http://127.0.0.1:8545" \
+  --private-key $OWNER_PRIVATE_KEY \
+  -vvvv
 
-# Or, to broadcast a transaction.
+# To broadcast a transaction, just add the `--broadcast` flag.
 forge script script/UpdateConfigs.s.sol \
   --rpc-url "http://127.0.0.1:8545" \
   --private-key $OWNER_PRIVATE_KEY \
