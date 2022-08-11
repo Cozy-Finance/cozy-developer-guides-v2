@@ -72,7 +72,7 @@ This script requires the protocol and a set to be deployed on the desired chain.
 The script includes a "Configuration" section at the top, which must be updated to the desired set/market config updates.
 
 This script behaves as follows:
-- This script will queue the configured set and market config updates if they have not already been queued, or if they have and the deadline to apply them has passed.
+- It will queue the configured set and market config updates if they have not already been queued, or if they have and the deadline to apply them has passed.
 - If the config updates have been queued and the current timestamp is within the allowed timeframe to apply queued config updates, this script will apply the queued config updates.
 
 Running the script with config updates that have already been queued (whether or not this script was used to do so) will apply
