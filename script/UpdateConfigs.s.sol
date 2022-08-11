@@ -39,7 +39,7 @@ contract UpdateConfigs is Script, ScriptUtils {
   address[] costModels = [address(0), address(0)];
 
   // The weights for each market, including any new markets. The indices of this array map 1:1 with the triggers array.
-  // NOTE: For an existing market, if you'd like to use its current weight (no-op), specify type(uint256).max) for that index.
+  // NOTE: For an existing market, if you'd like to use its current weight (no-op), specify type(uint16).max) for that index.
   uint16[] weights = [type(uint16).max, type(uint16).max];
 
   // The purchase fees for each market, including any new markets. The indices of this array map 1:1 with the triggers array.
