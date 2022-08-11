@@ -2,10 +2,36 @@ pragma solidity 0.8.15;
 
 import "forge-std/Script.sol";
 
+import "script/ScriptUtils.sol";
 import "src/interfaces/IManager.sol";
 import "src/interfaces/ISet.sol";
 
-contract DeployProtectionSet is Script {
+/**
+  * @notice *Purpose: Local deploy, testing, and production.*
+  *
+  * This script deploys a protection set using the configured market info and set configuration.
+  * Before executing, the configuration section in the script should be updated.
+  *
+  * To run this script:
+  *
+  * ```sh
+  * # Start anvil, forking from the current state of the desired chain.
+  * anvil --fork-url $OPTIMISM_RPC_URL
+  *
+  * # In a separate terminal, perform a dry run the script.
+  * forge script script/DeployProtectionSet.s.sol \
+  *   --rpc-url "http://127.0.0.1:8545" \
+  *   -vvvv
+  *
+  * # Or, to broadcast a transaction.
+  * forge script script/DeployProtectionSet.s.sol \
+  *   --rpc-url "http://127.0.0.1:8545" \
+  *   --private-key $OWNER_PRIVATE_KEY \
+  *   --broadcast \
+  *   -vvvv
+  * ```
+ */
+contract DeployProtectionSet is Script, ScriptUtils {
   // -------------------------------
   // -------- Configuration --------
   // -------------------------------
@@ -112,44 +138,5 @@ contract DeployProtectionSet is Script {
     vm.broadcast();
     ISet _set = manager.createSet(owner, pauser, asset, _setConfig, _sortedMarketInfos, salt);
     console2.log("Set deployed", address(_set));
-  }
-
-  // -------------------------
-  // -------- Helpers --------
-  // -------------------------
-
-  // Implementation reference https://medium.com/coinmonks/sorting-in-solidity-without-comparison-4eb47e04ff0d.
-  function _sortMarketInfoArray(IConfig.MarketInfo[] memory _marketInfos) internal pure returns(IConfig.MarketInfo[] memory) {
-    // Copy the _marketInfos array.
-    IConfig.MarketInfo[] memory _sortedMarketInfos = new IConfig.MarketInfo[](_marketInfos.length);
-    for (uint256 i = 0; i < _sortedMarketInfos.length; i++) {
-      _sortedMarketInfos[i] = _marketInfos[i];
-    }
-
-    // Quicksort the copied array.
-    if (_sortedMarketInfos.length > 1) {
-      _quickPart(_sortedMarketInfos, 0, _sortedMarketInfos.length - 1);
-    }
-    return _sortedMarketInfos;
-  }
-
-  function _quickPart(IConfig.MarketInfo[] memory _marketInfos, uint256 low, uint256 high) internal pure {
-    if (low < high) {
-      address pivotVal = address(_marketInfos[(low + high) / 2].trigger);
-
-      uint256 low1 = low;
-      uint256 high1 = high;
-      for (;;) {
-        while (address(_marketInfos[low1].trigger) < pivotVal) low1++;
-        while (address(_marketInfos[high1].trigger) > pivotVal) high1--;
-        if (low1 >= high1) break;
-        (_marketInfos[low1], _marketInfos[high1]) = (_marketInfos[high1], _marketInfos[low1]);
-        low1++;
-        high1--;
-      }
-      if (low < high1) _quickPart(_marketInfos, low, high1);
-      high1++;
-      if (high1 < high) _quickPart(_marketInfos, high1, high);
-    }
   }
 }
