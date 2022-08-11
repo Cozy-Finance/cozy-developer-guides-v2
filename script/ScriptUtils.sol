@@ -14,12 +14,12 @@ contract ScriptUtils {
 
     // Quicksort the copied array.
     if (_sortedMarketInfos.length > 1) {
-      _quickPart(_sortedMarketInfos, 0, _sortedMarketInfos.length - 1);
+      _quickSort(_sortedMarketInfos, 0, _sortedMarketInfos.length - 1);
     }
     return _sortedMarketInfos;
   }
 
-  function _quickPart(IConfig.MarketInfo[] memory _marketInfos, uint256 low, uint256 high) internal pure {
+  function _quickSort(IConfig.MarketInfo[] memory _marketInfos, uint256 low, uint256 high) internal pure {
     if (low < high) {
       address pivotVal = _marketInfos[(low + high) / 2].trigger;
 
@@ -33,9 +33,9 @@ contract ScriptUtils {
         low1++;
         high1--;
       }
-      if (low < high1) _quickPart(_marketInfos, low, high1);
+      if (low < high1) _quickSort(_marketInfos, low, high1);
       high1++;
-      if (high1 < high) _quickPart(_marketInfos, high1, high);
+      if (high1 < high) _quickSort(_marketInfos, high1, high);
     }
   }
 }
