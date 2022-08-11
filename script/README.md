@@ -27,12 +27,11 @@ The below steps are optional, but will let you switch your installed foundry ver
 
 Explanations and instructions for all scripts are below. All scripts support the following options:
 
-- Prepend `FOUNDRY_PROFILE=lite` to each `forge script` command to significantly speed up compilation time. This turns off the solc optimizer, resulting in bigger contracts that use more gas, but for local scripts this is ok.
 - Append a verbosity flag such as `-vvv` to each `forge script` command for more details.
 Learn more about the verbosity options [here](https://book.getfoundry.sh/forge/tests.html#logs-and-traces). This is useful to help debug failing scripts. The sample commands below use `-vvvv` to always show the full trace.
 - By default the scripts are dry runs that don't broadcast transactions to the chain. To actually submit the transactions to the specified RPC, append `--private-key <privateKey> --broadcast`
 
-For example, if you want to use the `DeployProtectionSet` script to deploy a set to a node to facilitate frontend development and testing you should prepend `FOUNDRY_PROFILE=lite` and append `--private-key $DEPLOYER_PRIVATE_KEY --broadcast`.
+For example, if you want to use the `DeployProtectionSet` script to deploy a set to a node to facilitate frontend development and testing you should append `--private-key $DEPLOYER_PRIVATE_KEY --broadcast`.
 When starting anvil you'll see a list of default accounts and their private keys&mdash; you can use account 9's private key for these local deploys.
 
 **_Never use the default anvil accounts on a live network, as the private keys are publicly known and funds sent to that account will be stolen_**.
@@ -120,7 +119,7 @@ forge script script/UpdateMetadata.s.sol \
   -vvvv
 
 # Or, to broadcast a transaction.
-FOUNDRY_PROFILE=lite forge script script/UpdateMetadata.s.sol \
+forge script script/UpdateMetadata.s.sol \
   --rpc-url "http://127.0.0.1:8545" \
   --private-key $AUTHORIZED_PRIVATE_KEY \
   --broadcast \
