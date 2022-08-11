@@ -9,6 +9,40 @@ import "src/interfaces/ICState.sol";
 import "src/interfaces/IManager.sol";
 import "src/interfaces/ISet.sol";
 
+/**
+  * @notice *Purpose: Update set and market configurations.*
+  *
+  * This script requires the protocol and a set to be deployed on the desired chain.
+  * The script includes a "Configuration" section at the top, which must be updated to the desired set/market config updates.
+  *
+  * This script behaves as follows:
+  * - It will queue the configured set and market config updates if they have not already been queued, or if they have and the deadline to apply them has passed.
+  * - If the config updates have been queued and the current timestamp is within the allowed timeframe to apply queued config updates, this script will apply the queued config updates.
+  *
+  * Running the script with config updates that have already been queued (whether or not this script was used to do so) will apply
+  * the queued config updates if the current timestamp is within the allowed window to apply config changes and if the set is active.
+  *
+  * To run this script:
+  *
+  * ```sh
+  * # Start anvil, forking from the current state of the desired chain.
+  * anvil --fork-url $OPTIMISM_RPC_URL
+  *
+  * # In a separate terminal, perform a dry run the script.
+  * # The private key of either the set owner or protocol owner must be included in order to queue config updates.
+  * forge script script/UpdateConfigs.s.sol \
+  *   --rpc-url "http://127.0.0.1:8545" \
+  *   --private-key $OWNER_PRIVATE_KEY \
+  *   -vvvv
+  *
+  * # To broadcast a transaction, just add the `--broadcast` flag.
+  * forge script script/UpdateConfigs.s.sol \
+  *   --rpc-url "http://127.0.0.1:8545" \
+  *   --private-key $OWNER_PRIVATE_KEY \
+  *   --broadcast \
+  *   -vvvv
+  * ```
+*/
 contract UpdateConfigs is Script, ScriptUtils {
   // -------------------------------
   // -------- Configuration --------

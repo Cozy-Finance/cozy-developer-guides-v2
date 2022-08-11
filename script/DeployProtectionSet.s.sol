@@ -6,6 +6,31 @@ import "script/ScriptUtils.sol";
 import "src/interfaces/IManager.sol";
 import "src/interfaces/ISet.sol";
 
+/**
+  * @notice *Purpose: Local deploy, testing, and production.*
+  *
+  * This script deploys a protection set using the configured market info and set configuration.
+  * Before executing, the configuration section in the script should be updated.
+  *
+  * To run this script:
+  *
+  * ```sh
+  * # Start anvil, forking from the current state of the desired chain.
+  * anvil --fork-url $OPTIMISM_RPC_URL
+  *
+  * # In a separate terminal, perform a dry run the script.
+  * forge script script/DeployProtectionSet.s.sol \
+  *   --rpc-url "http://127.0.0.1:8545" \
+  *   -vvvv
+  *
+  * # Or, to broadcast a transaction.
+  * forge script script/DeployProtectionSet.s.sol \
+  *   --rpc-url "http://127.0.0.1:8545" \
+  *   --private-key $OWNER_PRIVATE_KEY \
+  *   --broadcast \
+  *   -vvvv
+  * ```
+ */
 contract DeployProtectionSet is Script, ScriptUtils {
   // -------------------------------
   // -------- Configuration --------
