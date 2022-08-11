@@ -114,7 +114,10 @@ anvil --fork-url $OPTIMISM_RPC_URL
 
 # In a separate terminal, perform a dry run of the script.
 # The private key of a user authorized to make the desired metadata updates must be included.
-forge script script/UpdateMetadata.s.sol --rpc-url "http://127.0.0.1:8545" --private-key $AUTHORIZED_PRIVATE_KEY -vvvv
+forge script script/UpdateMetadata.s.sol \
+  --rpc-url "http://127.0.0.1:8545" \
+  --private-key $AUTHORIZED_PRIVATE_KEY \
+  -vvvv
 
 # Or, to broadcast a transaction.
 FOUNDRY_PROFILE=lite forge script script/UpdateMetadata.s.sol \
