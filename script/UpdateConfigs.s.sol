@@ -111,6 +111,9 @@ contract UpdateConfigs is Script, ScriptUtils {
       vm.broadcast();
       manager.finalizeUpdateConfigs(set, _setConfig, _sortedMarketInfos);
       console2.log("Config update applied.");
+    } else {
+      console2.log("ERROR: The queued config updates cannot be applied because the current time is not within the allowed range [configUpdateTime, configUpdateDeadline], or the set is not active");
+      revert();
     }
   }
 }
