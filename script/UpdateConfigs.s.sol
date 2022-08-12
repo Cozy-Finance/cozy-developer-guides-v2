@@ -3,7 +3,7 @@ pragma solidity 0.8.15;
 import "forge-std/Script.sol";
 
 import "script/ScriptUtils.sol";
-import "src/interfaces/IConfig.sol";
+import "cozy-v2-triggers/interfaces/IConfig.sol";
 import "src/interfaces/ICozyLens.sol";
 import "src/interfaces/ICState.sol";
 import "src/interfaces/IManager.sol";

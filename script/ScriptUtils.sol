@@ -1,6 +1,6 @@
 pragma solidity 0.8.15;
 
-import "src/interfaces/IConfig.sol";
+import "cozy-v2-triggers/interfaces/IConfig.sol";
 
 contract ScriptUtils {
 

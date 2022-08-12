@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity ^0.8.0;
 
-import "src/interfaces/IConfig.sol";
+import "cozy-v2-triggers/interfaces/IConfig.sol";
 import "src/interfaces/ISet.sol";
 
 /**
