@@ -4,16 +4,18 @@
 
 [profile.default]
 # forge config
-fuzz-runs = 100
+verbosity = 3
 # solidity config
 solc-version = "0.8.15"
 optimizer = true
 optimizer-runs = 1
 remappings = ["test/=test/", "script/=script/"] # Allows imports using e.g. `test/` to refer to root `test` directory.
-verbosity = 3
 
 # Verbosity levels (https://onbjerg.github.io/foundry-book/forge/tests.html#logs-and-traces)
 #   Level 2 (-vv): Logs emitted during tests are also displayed.
 #   Level 3 (-vvv): Stack traces for failing tests are also displayed.
 #   Level 4 (-vvvv): Stack traces for all tests are displayed, and setup traces for failing tests are displayed.
 #   Level 5 (-vvvvv): Stack traces and setup traces are always displayed.
+
+[profile.ci.fuzz]
+runs = 1000
