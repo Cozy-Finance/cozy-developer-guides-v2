@@ -6,6 +6,63 @@ Deploys are sorted by timestamp, with the most recent one first.
 
 ## Optimism
 
+### Set 3
+
+Set deployed 0xB91074fe74d558eB0B41cb3846404324c1e8d95d
+
+<details>
+  <summary>Metadata</summary>
+
+  - Timestamp: 1662580024
+  - Parsed timestamp: 2022-09-07T19:47:04.000Z
+</details>
+<details>
+  <summary>Configuration</summary>
+
+  - Market infos:
+    - trigger 0xF9FeD7853dC6F3E74421606F79a360DAE9256Cc3
+    - cost model 0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991
+    - weight 1666
+    - purchase fee 250
+    ---
+    - trigger 0xb7Cd2e5A6d02983f258A06E26baAF310054B14B1
+    - cost model 0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991
+    - weight 1666
+    - purchase fee 250
+    ---
+    - trigger 0x2f150A966d32ed8928200136d1D30A15c3694909
+    - cost model 0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991
+    - weight 1667
+    - purchase fee 250
+    ---
+    - trigger 0x5e3A0e3acBC61e54793256100cD9d9d87E86ce44
+    - cost model 0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991
+    - weight 1667
+    - purchase fee 250
+    ---
+    - trigger 0x6Fae18f377E58F62e089868eDF831f1d22114f14
+    - cost model 0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991
+    - weight 1667
+    - purchase fee 250
+    ---
+    - trigger 0x8b566Ee7e34c80E9dB2c1D6AB17652388d91aB05
+    - cost model 0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991
+    - weight 1667
+    - purchase fee 250
+    ---
+  ---
+  - Set config:
+    - leverage factor 30000
+    - deposit fee 0
+    - decay model 0x09f20eA12fe5a1211A0485aa59C067E9fcC4c04A
+    - drip model 0xEf778611eAf2e624432F49bcF7AC433584f642a2
+  ---
+  - Set authorized roles:
+    - owner 0x682bd405073dD248527E40184898eD45BB827527
+    - pauser 0x682bd405073dD248527E40184898eD45BB827527
+</details>
+<br />
+
 ### Set 2
 
 Set deployed 0x782eC4d1c7734c4b6926c1405c07bc466eC457c0
