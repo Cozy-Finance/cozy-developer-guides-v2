@@ -128,6 +128,7 @@ contract DeployProtectionSet is Script, ScriptUtils {
     console2.log("    deposit fee", _setConfig.depositFee);
     console2.log("    decay model", address(_setConfig.decayModel));
     console2.log("    drip model", address(_setConfig.dripModel));
+    console2.log("    asset", asset);
     console2.log("====================");
 
     console2.log("Set authorized roles:");
