@@ -4,3 +4,6 @@
 [submodule "lib/cozy-v2-triggers"]
 	path = lib/cozy-v2-triggers
 	url = https://github.com/cozy-finance/cozy-v2-triggers
+[submodule "lib/cozy-v2-interfaces"]
+	path = lib/cozy-v2-interfaces
+	url = https://github.com/cozy-finance/cozy-v2-interfaces
