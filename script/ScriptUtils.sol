@@ -1,13 +1,13 @@
 pragma solidity 0.8.15;
 
-import "src/interfaces/IConfig.sol";
+import "cozy-v2-interfaces/interfaces/IManager.sol";
 
 contract ScriptUtils {
 
   // Implementation reference https://medium.com/coinmonks/sorting-in-solidity-without-comparison-4eb47e04ff0d.
-  function _sortMarketInfoArray(IConfig.MarketInfo[] memory _marketInfos) internal pure returns(IConfig.MarketInfo[] memory) {
+  function _sortMarketInfoArray(MarketInfo[] memory _marketInfos) internal pure returns(MarketInfo[] memory) {
     // Copy the _marketInfos array.
-    IConfig.MarketInfo[] memory _sortedMarketInfos = new IConfig.MarketInfo[](_marketInfos.length);
+    MarketInfo[] memory _sortedMarketInfos = new MarketInfo[](_marketInfos.length);
     for (uint256 i = 0; i < _sortedMarketInfos.length; i++) {
       _sortedMarketInfos[i] = _marketInfos[i];
     }
@@ -19,7 +19,7 @@ contract ScriptUtils {
     return _sortedMarketInfos;
   }
 
-  function _quickSort(IConfig.MarketInfo[] memory _marketInfos, uint256 low, uint256 high) internal pure {
+  function _quickSort(MarketInfo[] memory _marketInfos, uint256 low, uint256 high) internal pure {
     if (low < high) {
       address pivotVal = _marketInfos[(low + high) / 2].trigger;
 
