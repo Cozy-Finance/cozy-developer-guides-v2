@@ -3,11 +3,7 @@ pragma solidity 0.8.15;
 import "forge-std/Script.sol";
 
 import "script/ScriptUtils.sol";
-import "src/interfaces/IConfig.sol";
-import "src/interfaces/ICozyLens.sol";
-import "src/interfaces/ICState.sol";
-import "src/interfaces/IManager.sol";
-import "src/interfaces/ISet.sol";
+import "cozy-v2-interfaces/interfaces/ICozyLens.sol";
 
 /**
   * @notice *Purpose: Update set and market configurations.*
@@ -85,9 +81,9 @@ contract UpdateConfigs is Script, ScriptUtils {
   // ---------------------------
 
   function run() public {
-    IConfig.SetConfig memory _currentSetConfig = lens.getSetConfig(set);
+    SetConfig memory _currentSetConfig = lens.getSetConfig(set);
 
-    IConfig.SetConfig memory _setConfig = IConfig.SetConfig(
+    SetConfig memory _setConfig = SetConfig(
       leverageFactor == type(uint256).max ? _currentSetConfig.leverageFactor : leverageFactor,
       depositFee == type(uint256).max ? _currentSetConfig.depositFee : depositFee,
       decayModel == address(0) ? _currentSetConfig.decayModel : IDecayModel(decayModel),
@@ -102,12 +98,12 @@ contract UpdateConfigs is Script, ScriptUtils {
     console2.log("====================");
 
     // For each market in the set (including any additions), a MarketInfo object must be added to _marketInfos.
-    IConfig.MarketInfo[] memory _marketInfos = new IConfig.MarketInfo[](triggers.length);
+    MarketInfo[] memory _marketInfos = new MarketInfo[](triggers.length);
     console2.log("Market configs:");
     for (uint256 i = 0; i < triggers.length; i++) {
-      IConfig.MarketInfo memory _currentMarketInfo = lens.getMarketInfo(set, triggers[i]);
+      MarketInfo memory _currentMarketInfo = lens.getMarketInfo(set, triggers[i]);
 
-      _marketInfos[i] = IConfig.MarketInfo({
+      _marketInfos[i] = MarketInfo({
         trigger: triggers[i],
         costModel: costModels[i] == address(0) ? _currentMarketInfo.costModel : ICostModel(costModels[i]),
         weight: weights[i] == type(uint16).max ? _currentMarketInfo.weight : weights[i],
@@ -122,7 +118,7 @@ contract UpdateConfigs is Script, ScriptUtils {
     console2.log("====================");
 
     // Sort the market config array.
-    IConfig.MarketInfo[] memory _sortedMarketInfos = _sortMarketInfoArray(_marketInfos);
+    MarketInfo[] memory _sortedMarketInfos = _sortMarketInfoArray(_marketInfos);
 
     // If the config updates are not yet queued or if they have already been queued but the deadline to apply them has passed, queue them.
     bytes32 _configUpdateHash = keccak256(abi.encode(_setConfig, _sortedMarketInfos));

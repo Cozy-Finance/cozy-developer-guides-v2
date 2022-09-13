@@ -3,8 +3,6 @@ pragma solidity 0.8.15;
 import "forge-std/Script.sol";
 
 import "script/ScriptUtils.sol";
-import "src/interfaces/IManager.sol";
-import "src/interfaces/ISet.sol";
 
 /**
   * @notice *Purpose: Local deploy, testing, and production.*
@@ -101,10 +99,10 @@ contract DeployProtectionSet is Script, ScriptUtils {
 
   function run() public {
     // For each market in the set, a MarketInfo object must be added to _marketInfos.
-    IConfig.MarketInfo[] memory _marketInfos = new IConfig.MarketInfo[](triggers.length);
+    MarketInfo[] memory _marketInfos = new MarketInfo[](triggers.length);
     console2.log("Market infos:");
     for (uint256 i = 0; i < triggers.length; i++) {
-      _marketInfos[i] = IConfig.MarketInfo({
+      _marketInfos[i] = MarketInfo({
         trigger: triggers[i],
         costModel: costModels[i],
         weight: weights[i],
@@ -120,9 +118,9 @@ contract DeployProtectionSet is Script, ScriptUtils {
     console2.log("====================");
 
     // Sort the market config array.
-    IConfig.MarketInfo[] memory _sortedMarketInfos = _sortMarketInfoArray(_marketInfos);
+    MarketInfo[] memory _sortedMarketInfos = _sortMarketInfoArray(_marketInfos);
 
-    IConfig.SetConfig memory _setConfig = IConfig.SetConfig(leverageFactor, depositFee, decayModel, dripModel);
+    SetConfig memory _setConfig = SetConfig(leverageFactor, depositFee, decayModel, dripModel);
     console2.log("Set config:");
     console2.log("    leverage factor", _setConfig.leverageFactor);
     console2.log("    deposit fee", _setConfig.depositFee);

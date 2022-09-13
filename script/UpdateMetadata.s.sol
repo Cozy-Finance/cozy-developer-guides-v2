@@ -1,7 +1,7 @@
 pragma solidity 0.8.15;
 
 import "forge-std/Script.sol";
-import "src/interfaces/ICozyMetadataRegistry.sol";
+import "cozy-v2-interfaces/interfaces/ICozyMetadataRegistry.sol";
 
 /**
   * @notice *Purpose: Update set and trigger metadata.*
