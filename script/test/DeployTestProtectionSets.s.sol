@@ -1,7 +1,5 @@
 pragma solidity 0.8.15;
 
-import "forge-std/Script.sol";
-
 import "script/ScriptUtils.sol";
 
 /**
@@ -9,7 +7,8 @@ import "script/ScriptUtils.sol";
   *
   * This script deploys two protection sets for testing using the configured market info and set configuration on Optimism.
   * The two sets use the same configuration except one of the sets uses USDC, and the other uses WETH.
-  * Before executing, the configuration section of the script should be reviewed.
+  * Before executing, the configuration section of the script should be reviewed, and the private key of an EOA that
+  * will be used for transactions in this script must be set in .env.
   *
   * To run this script:
   *
@@ -25,12 +24,11 @@ import "script/ScriptUtils.sol";
   * # Or, to broadcast a transaction.
   * forge script script/DeployTestProtectionSets.s.sol \
   *   --rpc-url "http://127.0.0.1:8545" \
-  *   --private-key $OWNER_PRIVATE_KEY \
   *   --broadcast \
   *   -vvvv
   * ```
  */
-contract DeployTestProtectionSets is Script, ScriptUtils {
+contract DeployTestProtectionSets is ScriptUtils {
   // -------------------------------
   // -------- Configuration --------
   // -------------------------------
@@ -123,6 +121,8 @@ contract DeployTestProtectionSets is Script, ScriptUtils {
   // ---------------------------
 
   function run() public {
+    super.loadDeployerKey();
+
     // For each market in the set, a MarketInfo object must be added to _marketInfos.
     MarketInfo[] memory _marketInfos = new MarketInfo[](triggers.length);
     console2.log("Market infos:");
@@ -161,7 +161,7 @@ contract DeployTestProtectionSets is Script, ScriptUtils {
     // Deploy each set.
     for (uint i = 0; i < assets.length; i++) {
       address _asset = assets[i];
-      vm.broadcast();
+      vm.broadcast(privateKey);
       ISet _set = manager.createSet(owner, pauser, _asset, _setConfig, _sortedMarketInfos, salts[i]);
       console2.log("Set deployed", address(_set));
       console2.log("    asset", _asset);

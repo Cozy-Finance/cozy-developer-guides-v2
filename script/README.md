@@ -29,9 +29,10 @@ Explanations and instructions for all scripts are below. All scripts support the
 
 - Append a verbosity flag such as `-vvv` to each `forge script` command for more details.
 Learn more about the verbosity options [here](https://book.getfoundry.sh/forge/tests.html#logs-and-traces). This is useful to help debug failing scripts. The sample commands below use `-vvvv` to always show the full trace.
-- By default the scripts are dry runs that don't broadcast transactions to the chain. To actually submit the transactions to the specified RPC, append `--private-key <privateKey> --broadcast`
+- The private key of an EOA that will be used for transactions must be set in `.env`. See `.env.example` in the root of this project.
+- By default the scripts are dry runs that don't broadcast transactions to the chain. To actually submit the transactions to the specified RPC, append `--broadcast`
 
-For example, if you want to use the `DeployProtectionSet` script to deploy a set to a node to facilitate frontend development and testing you should append `--private-key $DEPLOYER_PRIVATE_KEY --broadcast`.
+For example, if you want to use the `DeployProtectionSet` script to deploy a set to a node to facilitate frontend development and testing you should append `--broadcast`.
 When starting anvil you'll see a list of default accounts and their private keys&mdash; you can use account 9's private key for these local deploys.
 
 **_Never use the default anvil accounts on a live network, as the private keys are publicly known and funds sent to that account will be stolen_**.

@@ -1,14 +1,13 @@
 pragma solidity 0.8.15;
 
-import "forge-std/Script.sol";
-
 import "script/ScriptUtils.sol";
 
 /**
   * @notice *Purpose: Local deploy, testing, and production.*
   *
   * This script deploys a protection set using the configured market info and set configuration.
-  * Before executing, the configuration section in the script should be updated.
+  * Before executing, the configuration section in the script should be updated, and the private key of an EOA that
+  * will be used for transactions in this script must be set in .env.
   *
   * To run this script:
   *
@@ -24,12 +23,11 @@ import "script/ScriptUtils.sol";
   * # Or, to broadcast a transaction.
   * forge script script/DeployProtectionSet.s.sol \
   *   --rpc-url "http://127.0.0.1:8545" \
-  *   --private-key $OWNER_PRIVATE_KEY \
   *   --broadcast \
   *   -vvvv
   * ```
  */
-contract DeployProtectionSet is Script, ScriptUtils {
+contract DeployProtectionSet is ScriptUtils {
   // -------------------------------
   // -------- Configuration --------
   // -------------------------------
@@ -98,6 +96,8 @@ contract DeployProtectionSet is Script, ScriptUtils {
   // ---------------------------
 
   function run() public {
+    super.loadDeployerKey();
+
     // For each market in the set, a MarketInfo object must be added to _marketInfos.
     MarketInfo[] memory _marketInfos = new MarketInfo[](triggers.length);
     console2.log("Market infos:");
@@ -134,7 +134,7 @@ contract DeployProtectionSet is Script, ScriptUtils {
     console2.log("    pauser", pauser);
     console2.log("====================");
 
-    vm.broadcast();
+    vm.broadcast(privateKey);
     ISet _set = manager.createSet(owner, pauser, asset, _setConfig, _sortedMarketInfos, salt);
     console2.log("Set deployed", address(_set));
   }

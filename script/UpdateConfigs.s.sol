@@ -1,15 +1,14 @@
 pragma solidity 0.8.15;
 
-import "forge-std/Script.sol";
-
-import "script/ScriptUtils.sol";
 import "cozy-v2-interfaces/interfaces/ICozyLens.sol";
+import "script/ScriptUtils.sol";
 
 /**
   * @notice *Purpose: Update set and market configurations.*
   *
   * This script requires the protocol and a set to be deployed on the desired chain.
   * The script includes a "Configuration" section at the top, which must be updated to the desired set/market config updates.
+  * This script uses the private key of the EOA specified in .env for transactions.
   *
   * This script behaves as follows:
   * - It will queue the configured set and market config updates if they have not already been queued, or if they have and the deadline to apply them has passed.
@@ -28,18 +27,16 @@ import "cozy-v2-interfaces/interfaces/ICozyLens.sol";
   * # The private key of either the set owner or protocol owner must be included in order to queue config updates.
   * forge script script/UpdateConfigs.s.sol \
   *   --rpc-url "http://127.0.0.1:8545" \
-  *   --private-key $OWNER_PRIVATE_KEY \
   *   -vvvv
   *
   * # To broadcast a transaction, just add the `--broadcast` flag.
   * forge script script/UpdateConfigs.s.sol \
   *   --rpc-url "http://127.0.0.1:8545" \
-  *   --private-key $OWNER_PRIVATE_KEY \
   *   --broadcast \
   *   -vvvv
   * ```
 */
-contract UpdateConfigs is Script, ScriptUtils {
+contract UpdateConfigs is ScriptUtils {
   // -------------------------------
   // -------- Configuration --------
   // -------------------------------
@@ -81,6 +78,8 @@ contract UpdateConfigs is Script, ScriptUtils {
   // ---------------------------
 
   function run() public {
+    super.loadDeployerKey();
+
     SetConfig memory _currentSetConfig = lens.getSetConfig(set);
 
     SetConfig memory _setConfig = SetConfig(
@@ -124,7 +123,7 @@ contract UpdateConfigs is Script, ScriptUtils {
     bytes32 _configUpdateHash = keccak256(abi.encode(_setConfig, _sortedMarketInfos));
     if (_configUpdateHash != manager.queuedConfigUpdateHash(set) || block.timestamp > lens.getConfigUpdateDeadline(set)) {
       console2.log("Queuing config updates...");
-      vm.broadcast();
+      vm.broadcast(privateKey);
       manager.updateConfigs(set, _setConfig, _sortedMarketInfos);
       console2.log("Config updates queued.");
       console2.log("    getConfigUpdateTime", lens.getConfigUpdateTime(set));
@@ -138,7 +137,7 @@ contract UpdateConfigs is Script, ScriptUtils {
       set.state(address(set)) == ICState.CState.ACTIVE
     ) {
       console2.log("Finalizing config updates...");
-      vm.broadcast();
+      vm.broadcast(privateKey);
       manager.finalizeUpdateConfigs(set, _setConfig, _sortedMarketInfos);
       console2.log("Config update applied.");
     } else {

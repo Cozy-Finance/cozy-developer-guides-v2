@@ -1,13 +1,14 @@
 pragma solidity 0.8.15;
 
-import "forge-std/Script.sol";
 import "cozy-v2-interfaces/interfaces/ICozyMetadataRegistry.sol";
+import "script/ScriptUtils.sol";
 
 /**
   * @notice *Purpose: Update set and trigger metadata.*
   *
   * This script requires the protocol and the metadata registry to be deployed on the desired chain.
   * The script includes a "Configuration" section at the top, which must be updated to include the desired metadata updates.
+  * This script uses the private key of the EOA specified in .env for transactions.
   *
   * To run this script:
   *
@@ -19,20 +20,20 @@ import "cozy-v2-interfaces/interfaces/ICozyMetadataRegistry.sol";
   * # The private key of a user authorized to make the desired metadata updates must be included.
   * forge script script/UpdateMetadata.s.sol \
   *   --rpc-url "http://127.0.0.1:8545" \
-  *   --private-key $AUTHORIZED_PRIVATE_KEY \
   *   -vvvv
   *
   * # Or, to broadcast a transaction.
   * forge script script/UpdateMetadata.s.sol \
   *   --rpc-url "http://127.0.0.1:8545" \
-  *   --private-key $AUTHORIZED_PRIVATE_KEY \
   *   --broadcast \
   *   -vvvv
   * ```
  */
-contract UpdateMetadata is Script {
+contract UpdateMetadata is ScriptUtils {
 
   function run() public {
+    super.loadDeployerKey();
+
     // -------------------------------
     // -------- Configuration --------
     // -------------------------------
@@ -94,12 +95,12 @@ contract UpdateMetadata is Script {
     // ---------------------------
 
     if (updateSetMetadata) {
-      vm.broadcast();
+      vm.broadcast(privateKey);
       metadataRegistry.updateSetMetadata(_sets, _setMetadata);
     }
 
     if (updateTriggerMetadata) {
-      vm.broadcast();
+      vm.broadcast(privateKey);
       metadataRegistry.updateTriggerMetadata(_triggers, _triggerMetadata);
     }
   }
