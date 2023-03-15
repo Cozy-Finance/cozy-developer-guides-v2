@@ -3,38 +3,46 @@
   "sets": [
     {
       "asset": "0x4200000000000000000000000000000000000006",
-      "decayModel": "0x09f20eA12fe5a1211A0485aa59C067E9fcC4c04A",
       "depositFee": 0,
-      "dripModel": "0xEf778611eAf2e624432F49bcF7AC433584f642a2",
       "leverageFactor": 30000,
       "markets": [
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0x98A650e6ba1aCe060D48B23538105102D55563E9",
           "weight": 2000
         },
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0x44daA811daD7360B45922dd94764cFabbF945Aa8",
           "weight": 2000
         },
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0xC8878b7e0123cDDeaDe19fB5e29Be984A52Cc7FB",
           "weight": 2000
         },
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0x21411656319BC44DeE22841B6BaFE48f89eBa6b3",
           "weight": 2000
         },
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0x5C04a7Acc4e16A4DAebd9d01eab27FCd350344CE",
           "weight": 2000
         }
@@ -45,45 +53,53 @@
     },
     {
       "asset": "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
-      "decayModel": "0x09f20eA12fe5a1211A0485aa59C067E9fcC4c04A",
       "depositFee": 0,
-      "dripModel": "0xEf778611eAf2e624432F49bcF7AC433584f642a2",
       "leverageFactor": 30000,
       "markets": [
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0x98A650e6ba1aCe060D48B23538105102D55563E9",
           "weight": 2000
         },
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0x44daA811daD7360B45922dd94764cFabbF945Aa8",
           "weight": 2000
         },
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0xC8878b7e0123cDDeaDe19fB5e29Be984A52Cc7FB",
           "weight": 2000
         },
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0x21411656319BC44DeE22841B6BaFE48f89eBa6b3",
           "weight": 2000
         },
         {
           "costModel": "0x7e5a2bDC10F05D6cF15563570Eae3B8d346B9991",
+          "dripDecayModel": "0x0C68172da4C9f09A1bd0888fC22be0FC9f6Aa2dA",
           "purchaseFee": 250,
+          "saleFee": 500,
           "trigger": "0x5C04a7Acc4e16A4DAebd9d01eab27FCd350344CE",
           "weight": 2000
         }
       ],
       "owner": "0x682bd405073dD248527E40184898eD45BB827527",
       "pauser": "0x682bd405073dD248527E40184898eD45BB827527",
-      "salt": "0x0100000000000000000000000000000000000000000000000000000000000000"
+      "salt": "0x0200000000000000000000000000000000000000000000000000000000000000"
     }
   ]
 }

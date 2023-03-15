@@ -1,37 +1,37 @@
-pragma solidity 0.8.15;
+pragma solidity 0.8.18;
 
-import "forge-std/Script.sol";
-import "cozy-v2-interfaces/interfaces/ICozyMetadataRegistry.sol";
+import {Script} from "forge-std/Script.sol";
+import "script/interfaces/ICozyMetadataRegistry.sol";
 
 /**
-  * @notice *Purpose: Update set and trigger metadata.*
-  *
-  * This script requires the protocol and the metadata registry to be deployed on the desired chain.
-  * The script includes a "Configuration" section at the top, which must be updated to include the desired metadata updates.
-  *
-  * To run this script:
-  *
-  * ```sh
-  * # Start anvil, forking from the current state of the desired chain.
-  * anvil --fork-url $OPTIMISM_RPC_URL
-  *
-  * # In a separate terminal, perform a dry run of the script.
-  * # The private key of a user authorized to make the desired metadata updates must be included.
-  * forge script script/UpdateMetadata.s.sol \
-  *   --rpc-url "http://127.0.0.1:8545" \
-  *   --private-key $AUTHORIZED_PRIVATE_KEY \
-  *   -vvvv
-  *
-  * # Or, to broadcast a transaction.
-  * forge script script/UpdateMetadata.s.sol \
-  *   --rpc-url "http://127.0.0.1:8545" \
-  *   --private-key $AUTHORIZED_PRIVATE_KEY \
-  *   --broadcast \
-  *   -vvvv
-  * ```
+ * @notice *Purpose: Update set and trigger metadata.*
+ *
+ * This script requires the protocol and the metadata registry to be deployed on the desired chain.
+ * The script includes a "Configuration" section at the top, which must be updated to include the desired metadata
+ * updates.
+ *
+ * To run this script:
+ *
+ * ```sh
+ * # Start anvil, forking from the current state of the desired chain.
+ * anvil --fork-url $OPTIMISM_RPC_URL
+ *
+ * # In a separate terminal, perform a dry run of the script.
+ * # The private key of a user authorized to make the desired metadata updates must be included.
+ * forge script script/UpdateMetadata.s.sol \
+ *   --rpc-url "http://127.0.0.1:8545" \
+ *   --private-key $AUTHORIZED_PRIVATE_KEY \
+ *   -vvvv
+ *
+ * # Or, to broadcast a transaction.
+ * forge script script/UpdateMetadata.s.sol \
+ *   --rpc-url "http://127.0.0.1:8545" \
+ *   --private-key $AUTHORIZED_PRIVATE_KEY \
+ *   --broadcast \
+ *   -vvvv
+ * ```
  */
 contract UpdateMetadata is Script {
-
   function run() public {
     // -------------------------------
     // -------- Configuration --------
@@ -74,19 +74,13 @@ contract UpdateMetadata is Script {
     // This array should map 1:1 with the _triggers array.
     ICozyMetadataRegistry.Metadata[] memory _triggerMetadata = new ICozyMetadataRegistry.Metadata[](3);
     _triggerMetadata[0] = ICozyMetadataRegistry.Metadata(
-      "Mock Near",
-      "Mock Protocol Protection",
-      "https://cryptologos.cc/logos/near-protocol-near-logo.png"
+      "Mock Near", "Mock Protocol Protection", "https://cryptologos.cc/logos/near-protocol-near-logo.png"
     );
     _triggerMetadata[1] = ICozyMetadataRegistry.Metadata(
-      "Mock UST",
-      "Mock Peg Protection",
-      "https://cryptologos.cc/logos/terra-luna-luna-logo.png"
+      "Mock UST", "Mock Peg Protection", "https://cryptologos.cc/logos/terra-luna-luna-logo.png"
     );
     _triggerMetadata[2] = ICozyMetadataRegistry.Metadata(
-      "Mock Compound Finance",
-      "Mock Protocol Protection",
-      "https://cryptologos.cc/logos/compound-comp-logo.png"
+      "Mock Compound Finance", "Mock Protocol Protection", "https://cryptologos.cc/logos/compound-comp-logo.png"
     );
 
     // ---------------------------
