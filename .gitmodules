@@ -1,6 +1,3 @@
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
-[submodule "lib/cozy-v2-interfaces"]
-	path = lib/cozy-v2-interfaces
-	url = https://github.com/cozy-finance/cozy-v2-interfaces
