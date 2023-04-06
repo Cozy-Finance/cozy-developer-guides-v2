@@ -46,7 +46,7 @@ interface ISet {
       uint128 salesFeePool,
       uint64 lastDecayTime
     );
-  function setConfig() external view returns (uint32 leverageFactor, uint16 depositFee);
+  function setConfig() external view returns (uint32 leverageFactor, uint16 depositFee, bool rebalanceWeightsOnTrigger);
   function setState() external view returns (SetState);
   function triggerLookups(address) external view returns (bool marketExists, uint16 marketId);
   function updateConfigs(SetConfig memory setConfig_, MarketConfig[] memory marketConfigs_) external;

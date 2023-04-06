@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.18;
 
 import {Script} from "forge-std/Script.sol";
@@ -52,13 +53,13 @@ contract UpdateMetadata is Script {
     _sets[1] = ISet(address(0xBEEF));
 
     // This array should map 1:1 with the _sets array.
-    ICozyMetadataRegistry.Metadata[] memory _setMetadata = new ICozyMetadataRegistry.Metadata[](2);
-    _setMetadata[0] = ICozyMetadataRegistry.Metadata(
+    ICozyMetadataRegistry.SetMetadata[] memory _setMetadata = new ICozyMetadataRegistry.SetMetadata[](2);
+    _setMetadata[0] = ICozyMetadataRegistry.SetMetadata(
       "Mock ETH Set",
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ac semper lectus. Ut vitae scelerisque metus.",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ethereum_logo_2014.svg/628px-Ethereum_logo_2014.svg.png"
     );
-    _setMetadata[1] = ICozyMetadataRegistry.Metadata(
+    _setMetadata[1] = ICozyMetadataRegistry.SetMetadata(
       "Mock USDC Set",
       "In ac ipsum ex. Duis sagittis nibh ac volutpat venenatis. In dignissim elit et consequat ullamcorper.",
       "https://cryptologos.cc/logos/usd-coin-usdc-logo.png"
@@ -66,21 +67,20 @@ contract UpdateMetadata is Script {
 
     // -------- Trigger Metadata --------
 
-    address[] memory _triggers = new address[](3);
+    address[] memory _triggers = new address[](2);
     _triggers[0] = address(0xBEEF);
     _triggers[1] = address(0xBEEF);
-    _triggers[2] = address(0xBEEF);
 
     // This array should map 1:1 with the _triggers array.
-    ICozyMetadataRegistry.Metadata[] memory _triggerMetadata = new ICozyMetadataRegistry.Metadata[](3);
-    _triggerMetadata[0] = ICozyMetadataRegistry.Metadata(
-      "Mock Near", "Mock Protocol Protection", "https://cryptologos.cc/logos/near-protocol-near-logo.png"
+    ICozyMetadataRegistry.TriggerMetadata[] memory _triggerMetadata = new ICozyMetadataRegistry.TriggerMetadata[](2);
+    _triggerMetadata[0] = ICozyMetadataRegistry.TriggerMetadata(
+      "Mock Hop", "Bridge", "Mock Bridge Protection", "https://cryptologos.cc/logos/terra-luna-luna-logo.png"
     );
-    _triggerMetadata[1] = ICozyMetadataRegistry.Metadata(
-      "Mock UST", "Mock Peg Protection", "https://cryptologos.cc/logos/terra-luna-luna-logo.png"
-    );
-    _triggerMetadata[2] = ICozyMetadataRegistry.Metadata(
-      "Mock Compound Finance", "Mock Protocol Protection", "https://cryptologos.cc/logos/compound-comp-logo.png"
+    _triggerMetadata[1] = ICozyMetadataRegistry.TriggerMetadata(
+      "Mock Compound Finance",
+      "Lending",
+      "Mock Protocol Protection",
+      "https://cryptologos.cc/logos/compound-comp-logo.png"
     );
 
     // ---------------------------

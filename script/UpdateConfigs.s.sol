@@ -44,7 +44,10 @@ contract UpdateConfigs is ScriptUtils {
   // address(0) for addresses.
   uint256 constant leverageFactor = type(uint256).max;
   uint256 constant depositFee = type(uint256).max;
-  address constant dripDecayModel = address(0);
+
+  // If true, the weight of a market when triggered is automatically distributed pro rata among non-triggered markets.
+  // If false, the set admin must manually rebalance weights through a configuration update.
+  bool rebalanceWeightsOnTrigger = false;
 
   // -------- MarketConfig --------
 
@@ -91,12 +94,14 @@ contract UpdateConfigs is ScriptUtils {
 
     SetConfig memory setConfig_ = SetConfig(
       leverageFactor == type(uint256).max ? currentSetConfig_.leverageFactor : uint32(leverageFactor),
-      depositFee == type(uint256).max ? currentSetConfig_.depositFee : uint16(depositFee)
+      depositFee == type(uint256).max ? currentSetConfig_.depositFee : uint16(depositFee),
+      rebalanceWeightsOnTrigger
     );
 
     console2.log("Set config:");
     console2.log("    leverageFactor", setConfig_.leverageFactor);
     console2.log("    depositFee", setConfig_.depositFee);
+    console2.log("    rebalanceWeightsOnTrigger", setConfig_.rebalanceWeightsOnTrigger);
     console2.log("====================");
 
     // For each market in the set (including any additions), a MarketInfo object must be added to _marketInfos.

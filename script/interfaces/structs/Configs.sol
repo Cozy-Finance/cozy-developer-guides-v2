@@ -5,6 +5,9 @@ pragma solidity ^0.8.0;
 struct SetConfig {
   uint32 leverageFactor; // The set's leverage factor.
   uint16 depositFee; // Fee applied on each deposit and mint.
+  // If true, the weight of a market when triggered is automatically distributed pro rata among non-triggered markets.
+  // If false, the set admin must manually rebalance weights through a configuration update.
+  bool rebalanceWeightsOnTrigger;
 }
 
 /// @notice Market-level configuration.

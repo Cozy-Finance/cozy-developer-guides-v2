@@ -60,6 +60,9 @@ contract DeployProtectionSets is ScriptUtils {
     address owner;
     // The pauser of the set.
     address pauser;
+    // If true, the weight of a market when triggered is automatically distributed pro rata among non-triggered markets.
+    // If false, the set admin must manually rebalance weights through a configuration update.
+    bool rebalanceWeightsOnTrigger;
     // Arbitrary salt used for Set contract deploy.
     bytes32 salt;
   }
@@ -130,10 +133,11 @@ contract DeployProtectionSets is ScriptUtils {
       // Sort the market config array.
       MarketConfig[] memory _sortedMarketConfigs = _sortMarketConfigArray(_marketConfigs);
 
-      SetConfig memory _setConfig = SetConfig(_set.leverageFactor, _set.depositFee);
+      SetConfig memory _setConfig = SetConfig(_set.leverageFactor, _set.depositFee, _set.rebalanceWeightsOnTrigger);
       console2.log("Set config:");
       console2.log("    leverage factor", _set.leverageFactor);
       console2.log("    deposit fee", _set.depositFee);
+      console2.log("    rebalance weights on trigger", _set.rebalanceWeightsOnTrigger);
       console2.log("====================");
 
       console2.log("Set authorized roles:");
