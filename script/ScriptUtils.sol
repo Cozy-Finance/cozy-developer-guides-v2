@@ -27,8 +27,8 @@ contract ScriptUtils is Script {
   }
 
   function _getSetConfig(ISet set_) internal view returns (SetConfig memory) {
-    (uint32 leverageFactor_, uint16 depositFee_) = set_.setConfig();
-    return SetConfig(leverageFactor_, depositFee_);
+    (uint32 leverageFactor_, uint16 depositFee_, bool rebalanceWeightsOnTrigger_) = set_.setConfig();
+    return SetConfig(leverageFactor_, depositFee_, rebalanceWeightsOnTrigger_);
   }
 
   function _getMarket(ISet set_, uint16 marketId_) internal view returns (ISet.MarketStorage memory) {
